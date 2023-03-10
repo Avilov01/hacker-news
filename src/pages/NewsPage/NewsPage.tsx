@@ -7,9 +7,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import { TextUrl } from "./styled";
 import { fetchItem } from "../../api/news";
-import { ButtonCommon, LoadIndicator } from "../../components";
-import { Comments } from "../../components/Comments";
-import { Meta } from "../../components/Meta";
+import { ButtonCommon, Comments, LoadIndicator, Meta } from "../../components";
 import { ContentWrapper } from "../../styled";
 import { CommentRefType, News } from "../../types";
 
@@ -44,7 +42,12 @@ export const NewsPage = () => {
           </ButtonCommon>
         </Grid>
         <Grid container mt="40px" flexDirection="column">
-          <Meta by={news.by} kids={news.kids} time={news.time} />
+          <Meta
+            by={news.by}
+            kids={news.kids}
+            time={news.time}
+            score={news.score}
+          />
           <Grid item xs={6} mt="5px">
             <Typography variant="h5">{news.title}</Typography>
           </Grid>
