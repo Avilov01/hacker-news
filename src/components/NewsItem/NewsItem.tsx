@@ -31,11 +31,8 @@ export const NewsCardRow: FC<NewsItemProps> = ({ item }) => {
           <Grid item xs={9}>
             <Typography fontSize={18}>{title}</Typography>
           </Grid>
-          <Grid item xs={1}>
-            <span>score: {score}</span>
-          </Grid>
         </Box>
-        <Meta by={by} kids={kids} time={time} />
+        <Meta by={by} kids={kids} time={time} score={score} />
       </NewNewsCardRowWrapper>
     </Grid>
   );

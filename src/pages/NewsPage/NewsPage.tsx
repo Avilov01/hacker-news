@@ -1,35 +1,41 @@
-import { useRef } from "react";
+import React from "react";
 
-import { Refresh } from "@mui/icons-material";
 import { Box, Divider, Grid, Typography } from "@mui/material";
 import { useQuery } from "react-query";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { TextUrl } from "./styled";
 import { fetchItem } from "../../api/news";
-import { ButtonCommon, LoadIndicator } from "../../components";
-import { Comments } from "../../components/Comments";
-import { Meta } from "../../components/Meta";
+import {
+  ButtonBase,
+  ButtonRefetch,
+  Comments,
+  LoadIndicator,
+  Meta,
+} from "../../components";
 import { ContentWrapper } from "../../styled";
-import { CommentRefType, News } from "../../types";
+import { CommentsType, News } from "../../types";
 
 export const NewsPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const refComments = useRef<CommentRefType>(null);
-
   const { data: news } = useQuery("news", () => fetchItem<News>(id || ""));
+  const {
+    data: comments,
+    isRefetching: isRefetchingComments,
+    refetch: refetchComments,
+  } = useQuery(
+    [`comments`, news?.kids],
+    () => news?.kids && Promise.all(news.kids.map(fetchItem<CommentsType>)),
+    { keepPreviousData: false }
+  );
 
   if (!news) {
     return <LoadIndicator />;
   }
 
   const handleBack = () => navigate(-1);
-
-  const handleRefreshComments = () => {
-    refComments.current?.refreshComments();
-  };
 
   return (
     <ContentWrapper
@@ -39,12 +45,17 @@ export const NewsPage = () => {
     >
       <Grid container flexDirection="column">
         <Grid item mt="20px">
-          <ButtonCommon variant="outlined" onClick={handleBack}>
+          <ButtonBase variant="outlined" onClick={handleBack}>
             Back to news
-          </ButtonCommon>
+          </ButtonBase>
         </Grid>
         <Grid container mt="40px" flexDirection="column">
-          <Meta by={news.by} kids={news.kids} time={news.time} />
+          <Meta
+            by={news.by}
+            kids={news.kids}
+            time={news.time}
+            score={news.score}
+          />
           <Grid item xs={6} mt="5px">
             <Typography variant="h5">{news.title}</Typography>
           </Grid>
@@ -65,17 +76,12 @@ export const NewsPage = () => {
               <Typography fontSize={18}>
                 {news?.kids.length ? "comments" : "no comments"}{" "}
               </Typography>
-              <ButtonCommon
-                variant="outlined"
-                onClick={handleRefreshComments}
-                sx={{
-                  fontSize: 16,
-                  marginLeft: "5px",
-                  textTransform: "lowercase",
-                }}
+              <ButtonRefetch
+                isRefetching={isRefetchingComments}
+                refetch={refetchComments}
               >
-                refresh comments <Refresh />
-              </ButtonCommon>
+                refresh comments
+              </ButtonRefetch>
             </Box>
             <Divider />
             <Box
@@ -85,7 +91,7 @@ export const NewsPage = () => {
                 overflow: "scroll",
               }}
             >
-              <Comments ref={refComments} comments={news.kids} />
+              <Comments comments={comments} />
             </Box>
           </>
         )}

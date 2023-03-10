@@ -3,9 +3,9 @@ import { Grid, Typography } from "@mui/material";
 import { News } from "../../types";
 import { getTime } from "../../utils";
 
-type MetaProps = Pick<News, "kids" | "time" | "by">;
+type MetaProps = Pick<News, "kids" | "time" | "by" | "score">;
 
-export const Meta = ({ time, kids, by }: MetaProps) => {
+export const Meta = ({ time, kids, by, score }: MetaProps) => {
   const timeFormat = getTime(time);
 
   return (
@@ -23,6 +23,9 @@ export const Meta = ({ time, kids, by }: MetaProps) => {
           , comments: {kids.length}
         </Typography>
       )}
+      <Typography color="gray" fontSize={16}>
+        , points: {score}
+      </Typography>
     </Grid>
   );
 };

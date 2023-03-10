@@ -16,16 +16,18 @@ import { getTime } from "../../utils";
 import { LoadIndicator } from "../LoadIndicator";
 
 type CommentsProps = {
-  comments: number[];
+  commentsIds?: number[];
+  comments?: CommentsType[];
   id?: number;
   isNested?: boolean;
 };
 
 export const Comments = forwardRef<CommentRefType, CommentsProps>(
-  ({ comments, id, isNested }, ref) => {
+  ({ commentsIds, id, isNested, comments }, ref) => {
     const { data, isLoading, refetch } = useQuery(
-      [`comments${id}`, comments],
-      () => Promise.all(comments.map(fetchItem<CommentsType>)),
+      [`comments${id}`, commentsIds],
+      () =>
+        commentsIds && Promise.all(commentsIds.map(fetchItem<CommentsType>)),
       { keepPreviousData: false }
     );
 
@@ -72,7 +74,7 @@ export const Comments = forwardRef<CommentRefType, CommentsProps>(
           <LoadIndicator size={isNested ? 30 : undefined} />
         ) : (
           <>
-            {data?.map((c) => {
+            {(comments || data)?.map((c) => {
               const commentCount = c?.kids?.length
                 ? showDiscus[c?.id]
                   ? "[ - ]"
@@ -103,7 +105,7 @@ export const Comments = forwardRef<CommentRefType, CommentsProps>(
                       <Box ml="30px">
                         <Comments
                           key={c?.id}
-                          comments={c?.kids}
+                          commentsIds={c?.kids}
                           isNested={true}
                         />
                       </Box>

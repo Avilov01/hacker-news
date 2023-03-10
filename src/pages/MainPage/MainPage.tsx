@@ -14,12 +14,14 @@ export const MainPage = ({ news }: MainPageProps) => {
   }
 
   return (
-    <ContentWrapper>
-      <Grid container spacing={1}>
-        {news.map((item) => {
-          return <NewsCardRow key={item.id} item={item} />;
-        })}
-      </Grid>
-    </ContentWrapper>
+    <>
+      <ContentWrapper>
+        <Grid container spacing={1}>
+          {news.map((item) => {
+            return <NewsCardRow key={item?.id} item={item} />;
+          })}
+        </Grid>
+      </ContentWrapper>
+    </>
   );
 };
