@@ -8,4 +8,14 @@ export const AppWrapper = styled(Box)({
   height: "calc(100vh - 80px)",
   padding: 40,
   color: "black",
+  "& *": {
+    "&::-webkit-scrollbar": {
+      width: "5px",
+    },
+    "&::-webkit-scrollbar-thumb": {
+      backgroundColor: "#E3DDD0",
+      outline: "none",
+      borderRadius: "5px",
+    },
+  },
 });

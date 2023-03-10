@@ -1,3 +1,3 @@
-export { ButtonBack } from './Buttons';
-export { LoadIndicator } from './LoadIndicator';
-export { NewsCardRow } from './NewsItem';
+export * from "./Buttons";
+export { LoadIndicator } from "./LoadIndicator";
+export { NewsCardRow } from "./NewsItem";
