@@ -12,10 +12,14 @@ import { MainPage } from "./pages/MainPage";
 import { NewsPage } from "./pages/NewsPage";
 
 function App() {
-  const { data, refetch, isRefetching } = useQuery("newsIds", fetchNews, {
-    refetchIntervalInBackground: true,
-    refetchInterval: 60 * 1000,
-  });
+  const { data, refetch, isRefetching, isLoading } = useQuery(
+    "newsIds",
+    fetchNews,
+    {
+      refetchIntervalInBackground: true,
+      refetchInterval: 60 * 1000,
+    }
+  );
 
   return (
     <AppWrapper>
@@ -26,7 +30,10 @@ function App() {
             path="/"
             element={
               <>
-                <ButtonRefetch isRefetching={isRefetching} refetch={refetch}>
+                <ButtonRefetch
+                  isRefetching={isRefetching || isLoading}
+                  refetch={refetch}
+                >
                   refresh news
                 </ButtonRefetch>
                 <MainPage news={data} />
