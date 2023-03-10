@@ -9,7 +9,6 @@ import { AppWrapper } from "./layout/AppWrapper";
 import { Container } from "./layout/Container";
 import { MainPage } from "./pages/MainPage";
 import { NewsPage } from "./pages/NewsPage";
-import { ContentWrapper } from "./styled";
 
 function App() {
   const { data } = useQuery("newsIds", fetchNews, {
@@ -23,12 +22,10 @@ function App() {
         <Typography variant="h4" fontWeight={500}>
           Hacker News
         </Typography>
-        <ContentWrapper>
-          <Routes>
-            <Route path="/" element={<MainPage news={data} />} />
-            <Route path="/item/:id" element={<NewsPage />} />
-          </Routes>
-        </ContentWrapper>
+        <Routes>
+          <Route path="/" element={<MainPage news={data} />} />
+          <Route path="/item/:id" element={<NewsPage />} />
+        </Routes>
       </Container>
     </AppWrapper>
   );
