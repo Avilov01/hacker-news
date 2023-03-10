@@ -19,9 +19,7 @@ function App() {
   return (
     <AppWrapper>
       <Container>
-        <Typography variant="h4" fontWeight={500}>
-          Hacker News
-        </Typography>
+        <Typography variant="h4">Hacker News</Typography>
         <Routes>
           <Route path="/" element={<MainPage news={data} />} />
           <Route path="/item/:id" element={<NewsPage />} />
