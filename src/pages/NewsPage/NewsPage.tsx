@@ -9,9 +9,9 @@ import { TextUrl } from "./styled";
 import { fetchItem } from "../../api/news";
 import { ButtonCommon, LoadIndicator } from "../../components";
 import { Comments } from "../../components/Comments";
+import { Meta } from "../../components/Meta";
 import { ContentWrapper } from "../../styled";
 import { CommentRefType, News } from "../../types";
-import { getTime } from "../../utils";
 
 export const NewsPage = () => {
   const { id } = useParams();
@@ -44,14 +44,7 @@ export const NewsPage = () => {
           </ButtonCommon>
         </Grid>
         <Grid container mt="40px" flexDirection="column">
-          <Grid container item xs={6} flexDirection="row" alignItems="center">
-            <Typography color="gray" fontSize={16}>
-              {getTime(news?.time)},
-            </Typography>
-            <Typography color="gray" fontSize={16} ml="5px">
-              by: {news.by}
-            </Typography>
-          </Grid>
+          <Meta by={news.by} kids={news.kids} time={news.time} />
           <Grid item xs={6} mt="5px">
             <Typography variant="h5">{news.title}</Typography>
           </Grid>
