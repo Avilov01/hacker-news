@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 import { NewNewsCardRowWrapper } from "./styled";
 import { News } from "../../types";
-import { getTime } from "../../utils";
+import { Meta } from "../Meta";
 
 type NewsItemProps = {
   item: News;
@@ -16,8 +16,6 @@ export const NewsCardRow: FC<NewsItemProps> = ({ item }) => {
   const navigate = useNavigate();
 
   const onNews = () => navigate(`/item/${id}`);
-
-  const testTime = getTime(time);
 
   return (
     <Grid item xs={12}>
@@ -37,11 +35,7 @@ export const NewsCardRow: FC<NewsItemProps> = ({ item }) => {
             <span>score: {score}</span>
           </Grid>
         </Box>
-        <Grid container spacing={2}>
-          <Grid item>by: {by}</Grid>
-          <Grid item>{testTime}</Grid>
-          <Grid item>comments: {kids?.length || 0}</Grid>
-        </Grid>
+        <Meta by={by} kids={kids} time={time} />
       </NewNewsCardRowWrapper>
     </Grid>
   );
