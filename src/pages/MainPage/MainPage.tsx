@@ -1,14 +1,29 @@
+import React from "react";
+
 import { Grid } from "@mui/material";
 
 import { LoadIndicator, NewsCardRow } from "../../components";
 import { ContentWrapper } from "../../styled";
 import { News } from "../../types";
+import { ErrorPage } from "../ErrorPage";
 
 type MainPageProps = {
   news?: News[];
+  isError?: boolean;
+  refetch: () => void;
+  isRefetching: boolean;
 };
 
-export const MainPage = ({ news }: MainPageProps) => {
+export const MainPage = ({
+  news,
+  isError,
+  refetch,
+  isRefetching,
+}: MainPageProps) => {
+  if (isError) {
+    return <ErrorPage isRefetching={isRefetching} handleRefetch={refetch} />;
+  }
+
   if (!news) {
     return <LoadIndicator />;
   }

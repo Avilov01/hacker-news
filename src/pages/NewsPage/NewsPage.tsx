@@ -15,22 +15,44 @@ import {
 } from "../../components";
 import { ContentWrapper } from "../../styled";
 import { CommentsType, News } from "../../types";
+import { ErrorPage } from "../ErrorPage";
 
 export const NewsPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const { data: news } = useQuery("news", () => fetchItem<News>(id || ""));
+  const {
+    data: news,
+    isRefetching: isRefetchingNews,
+    isError: isErrorNews,
+    refetch: refetchNews,
+  } = useQuery("news", () => fetchItem<News>(id || ""));
+
   const {
     data: comments,
     isRefetching: isRefetchingComments,
     isLoading: isLoadingComments,
     refetch: refetchComments,
+    isError: isErrorComments,
   } = useQuery(
     [`comments`, news?.kids],
     () => news?.kids && Promise.all(news.kids.map(fetchItem<CommentsType>)),
     { keepPreviousData: false }
   );
+
+  const hasError = isErrorNews || isErrorComments;
+  const hasIsRefetch = isRefetchingComments || isRefetchingNews;
+
+  const handleRefetch = () => {
+    isErrorNews && refetchNews();
+    isErrorComments && refetchComments();
+  };
+
+  if (hasError) {
+    return (
+      <ErrorPage isRefetching={hasIsRefetch} handleRefetch={handleRefetch} />
+    );
+  }
 
   if (!news) {
     return <LoadIndicator />;

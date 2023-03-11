@@ -12,7 +12,7 @@ import { MainPage } from "./pages/MainPage";
 import { NewsPage } from "./pages/NewsPage";
 
 function App() {
-  const { data, refetch, isRefetching, isLoading } = useQuery(
+  const { data, refetch, isRefetching, isLoading, isError } = useQuery(
     "newsIds",
     fetchNews,
     {
@@ -36,7 +36,12 @@ function App() {
                 >
                   refresh news
                 </ButtonRefetch>
-                <MainPage news={data} />
+                <MainPage
+                  isRefetching={isRefetching}
+                  refetch={refetch}
+                  news={data}
+                  isError={isError}
+                />
               </>
             }
           />
