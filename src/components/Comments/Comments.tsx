@@ -1,17 +1,11 @@
-import {
-  forwardRef,
-  Fragment,
-  useEffect,
-  useImperativeHandle,
-  useState,
-} from "react";
+import { Fragment, useEffect, useState } from "react";
 
 import { Box, Divider, Typography } from "@mui/material";
 import { useQuery } from "react-query";
 
 import { HtmlContentBox } from "./styled";
 import { fetchItem } from "../../api/news";
-import { CommentRefType, CommentsType } from "../../types";
+import { CommentsType } from "../../types";
 import { getTime } from "../../utils";
 import { LoadIndicator } from "../LoadIndicator";
 
@@ -20,108 +14,110 @@ type CommentsProps = {
   comments?: CommentsType[];
   id?: number;
   isNested?: boolean;
+  isLoading?: boolean;
 };
 
-export const Comments = forwardRef<CommentRefType, CommentsProps>(
-  ({ commentsIds, id, isNested, comments }, ref) => {
-    const { data, isLoading, refetch } = useQuery(
-      [`comments${id}`, commentsIds],
-      () =>
-        commentsIds && Promise.all(commentsIds.map(fetchItem<CommentsType>)),
-      { keepPreviousData: false }
-    );
+export const Comments = ({
+  commentsIds,
+  id,
+  isNested,
+  comments,
+  isLoading,
+}: CommentsProps) => {
+  const { data, isLoading: isLoadingComments } = useQuery(
+    [`comments${id}`, commentsIds],
+    () => commentsIds && Promise.all(commentsIds.map(fetchItem<CommentsType>)),
+    { keepPreviousData: false }
+  );
 
-    useImperativeHandle(
-      ref,
-      () => ({
-        refreshComments: () => {
-          refetch();
-        },
-      }),
-      // eslint-disable-next-line
-      []
-    );
+  const [showDiscus, setShowDiscus] = useState<Record<string, boolean>>({});
 
-    const [showDiscus, setShowDiscus] = useState<Record<string, boolean>>({});
+  useEffect(() => {
+    if (data) {
+      if (!showDiscus) {
+        const discusData: Record<string, boolean> = {};
 
-    useEffect(() => {
-      if (data) {
-        if (!showDiscus) {
-          const discusData: Record<string, boolean> = {};
+        data.forEach((c) => {
+          discusData[c.id] = false;
+        });
 
-          data.forEach((c) => {
-            discusData[c.id] = false;
-          });
-
-          setShowDiscus(discusData);
-        }
+        setShowDiscus(discusData);
       }
-      // eslint-disable-next-line
-    }, [data]);
+    }
+    // eslint-disable-next-line
+  }, [data]);
 
-    const handleShowDiscus = (id: number) => {
-      setShowDiscus((state) => {
-        return {
-          ...state,
-          [id]: !state[id],
-        };
-      });
-    };
+  const handleShowDiscus = (id: number) => {
+    setShowDiscus((state) => {
+      return {
+        ...state,
+        [id]: !state[id],
+      };
+    });
+  };
 
-    return (
-      <>
-        {isLoading ? (
+  return (
+    <>
+      {isLoading || isLoadingComments ? (
+        <Box
+          sx={{
+            marginTop: !isNested ? "40px" : undefined,
+          }}
+        >
           <LoadIndicator size={isNested ? 30 : undefined} />
-        ) : (
-          <>
-            {(comments || data)?.map((c) => {
-              const commentCount = c?.kids?.length
-                ? showDiscus[c?.id]
-                  ? "[ - ]"
-                  : `[${c?.kids?.length} more]`
-                : "";
+        </Box>
+      ) : (
+        <>
+          {(comments || data)?.map((c) => {
+            const timeComment = getTime(c?.time);
 
-              return (
-                <Fragment key={c?.id}>
-                  <Box
-                    ml="5px"
-                    mt={!isNested ? "5px" : ""}
-                    sx={{
-                      ":hover": {
-                        cursor: c?.kids?.length && "pointer",
-                      },
-                    }}
-                    onClick={() => handleShowDiscus(c?.id)}
-                  >
+            const commentCount = c?.kids?.length
+              ? showDiscus[c?.id]
+                ? "[ - ]"
+                : `[${c?.kids?.length} more]`
+              : "";
+
+            return (
+              <Fragment key={c?.id}>
+                <Box
+                  ml="5px"
+                  mt={!isNested ? "5px" : ""}
+                  sx={{
+                    ":hover": {
+                      cursor: c?.kids?.length && "pointer",
+                    },
+                  }}
+                >
+                  <Box onClick={() => handleShowDiscus(c?.id)}>
                     <Typography fontSize={13} fontWeight={600} color="gray">
-                      {getTime(c?.time)}, by: {c?.by} {commentCount}
+                      {timeComment}, by: {c?.by} {commentCount}
                     </Typography>
                     <HtmlContentBox
                       fontSize={14}
                       dangerouslySetInnerHTML={{ __html: c?.text }}
                     />
-
-                    {c?.kids && showDiscus[c.id] && (
-                      <Box ml="30px">
-                        <Comments
-                          key={c?.id}
-                          commentsIds={c?.kids}
-                          isNested={true}
-                        />
-                      </Box>
-                    )}
                   </Box>
-                  {!isNested && (
-                    <Box mt="10px">
-                      <Divider />
+
+                  {c?.kids && showDiscus[c.id] && (
+                    <Box ml="30px">
+                      <Comments
+                        key={c?.id}
+                        commentsIds={c?.kids}
+                        isNested={true}
+                      />
                     </Box>
                   )}
-                </Fragment>
-              );
-            })}
-          </>
-        )}
-      </>
-    );
-  }
-);
+                </Box>
+                {!isNested && (
+                  <Box mt="10px">
+                    <Divider />
+                  </Box>
+                )}
+              </Fragment>
+            );
+          })}
+        </>
+      )}
+    </>
+  );
+};
