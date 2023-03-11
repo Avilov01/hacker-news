@@ -24,6 +24,7 @@ export const NewsPage = () => {
   const {
     data: comments,
     isRefetching: isRefetchingComments,
+    isLoading: isLoadingComments,
     refetch: refetchComments,
   } = useQuery(
     [`comments`, news?.kids],
@@ -77,8 +78,8 @@ export const NewsPage = () => {
                 {news?.kids.length ? "comments" : "no comments"}{" "}
               </Typography>
               <ButtonRefetch
-                isRefetching={isRefetchingComments}
-                refetch={refetchComments}
+                isRefetching={isRefetchingComments || isLoadingComments}
+                refetch={refetchComments || isLoadingComments}
               >
                 refresh comments
               </ButtonRefetch>
@@ -91,7 +92,7 @@ export const NewsPage = () => {
                 overflow: "scroll",
               }}
             >
-              <Comments comments={comments} />
+              <Comments comments={comments} isLoading={isLoadingComments} />
             </Box>
           </>
         )}
